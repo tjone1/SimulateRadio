@@ -6,14 +6,27 @@ android {
         applicationId "com.example.simulateradio"
         minSdkVersion 26
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode versionCode()
+        versionName versionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    applicationVariants.all { variant ->
+        variant.mergedFlavor.versionCode = versionCode()
+        variant.mergedFlavor.versionName = versionName()
+        variant.outputs.all { output ->
+            output.setVersionCodeOverride(versionCode())
+            output.setVersionNameOverride(versionName())
+            if ('debug' == variant.buildType.name) {
+                outputFileName = "${defaultConfig.applicationId}.apk"
+            } else {
+                outputFileName = "${defaultConfig.applicationId}_v${versionName()}_${variant.flavorName}_${variant.buildType.name}.apk"
+            }
         }
     }
 }
@@ -25,4 +38,16 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+def versionCode() {
+    return mainVersion.toInteger() * 10000000 + miniVersion.toInteger() * 100000 + commitCount.execute().getText().trim().toInteger()
+}
+
+def versionName() {
+    return mainVersion + "." + miniVersion + "." + commitHashId.execute().getText().trim() + "-" + buildTime()
+}
+
+def buildTime() {
+    return new Date().format("yyyyMMdd", TimeZone.getTimeZone("UTC"))
 }
