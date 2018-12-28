@@ -13,7 +13,7 @@ public class RadioService extends Service {
 
     private int progress = 0;     //进度条的进度值
     private OnPlayProgressListener progressListener; //更新进度的回调接口
-    private boolean isPlying = false;    //判断是否重复按下播放键
+    private boolean isPlying = false;    //判断播放状态
 
 
     public RadioService() {
@@ -57,6 +57,7 @@ public class RadioService extends Service {
                 public void run() {
                     while (progress < MAX_PROGRESS && isPlying) {
                         progress++;
+                        //接口回调 进度变化实时刷新UI
                         if (progressListener != null) {
                             progressListener.onProgress(progress);
                         }
